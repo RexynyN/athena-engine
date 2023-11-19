@@ -1,24 +1,36 @@
-from flask import Flask, request, jsonify, send_file
+from actions import summarize, tooltip
+from flask import Flask, request, jsonify
 
-print(__name__)
+
 app = Flask(__name__)
 
 @app.route('/')
 def index ():
-    user = request.args.get("user")
-    return user
+    return jsonify({ "data": "Poggggers" })
 
-@app.route('/json')
-def get_json():
-    return jsonify({ "nome": "breno", "sexo":"Sim"})
+@app.route('/tooltip', methods=["POST"])
+def tooltip_text():
+    content = request.json
+    tooltips = tooltip.classify_from_text(content["data"])
 
-@app.route("/file/<string:name>")
-def get_file(name):
-    print(name)
-    # return send_from_directory("purple.pdf")
+    return jsonify({ "data": tooltips })
 
-    # Se for para aparecer no browser, ao invés de fazer o download coloca com False
-    return send_file("MoneyGame.mp3",  as_attachment=True)
+
+@app.route('/tooltip/list', methods=["POST"])
+def tooltip_concepts():
+    content = request.json
+    tooltips = tooltip.classify_from_concept(content["data"])
+
+    return jsonify({ "data": tooltips})
+
+
+@app.route("/summarize/", methods=["POST"])
+def poppers():
+    data = request.json
+    summ = summarize.summarize_text(data.get("data"))
+    print(summ)
+
+    return jsonify({ "data": summ })
 
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=8080, debug=True)
