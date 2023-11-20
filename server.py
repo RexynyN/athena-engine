@@ -1,36 +1,69 @@
 from actions import summarize, tooltip
-from flask import Flask, request, jsonify
+from quart import Quart, request
 
-
-app = Flask(__name__)
+app = Quart(__name__)
 
 @app.route('/')
-def index ():
-    return jsonify({ "data": "Poggggers" })
+async def index():
+    return { "data": "We so back" }
 
 @app.route('/tooltip', methods=["POST"])
-def tooltip_text():
-    content = request.json
-    tooltips = tooltip.classify_from_text(content["data"])
+async def tooltip_text():
+    content = await request.get_json()
+    if "data" not in content:
+        return "O campo 'data' não foi passado, sem processamento a ser feito", 400
+    
+    text = content["data"]
+    if not isinstance(text, str):
+        return "O argumento de 'data' deve ser uma string de texto", 400
+    
+    tooltips = await tooltip.classify_from_text(content["data"])
 
-    return jsonify({ "data": tooltips })
+    return { "data": tooltips }
 
 
 @app.route('/tooltip/list', methods=["POST"])
-def tooltip_concepts():
-    content = request.json
-    tooltips = tooltip.classify_from_concept(content["data"])
+async def tooltip_concepts():
+    content = await request.get_json()
+    if "data" not in content:
+        return "O campo 'data' não foi passado, sem processamento a ser feito", 400
+    
+    concepts = content["data"]
+    if not isinstance(concepts, list):
+        return "O argumento de 'data' deve ser uma lista de strings de texto", 400
+    
+    tooltips = await tooltip.classify_from_concept(concepts)
 
-    return jsonify({ "data": tooltips})
+    return { "data": tooltips }
 
 
 @app.route("/summarize/", methods=["POST"])
-def poppers():
-    data = request.json
-    summ = summarize.summarize_text(data.get("data"))
-    print(summ)
+async def poppers():
+    content = await request.get_json()
+    if "data" not in content:
+        return "O campo 'data' não foi passado, sem processamento a ser feito", 400
+    
+    text = content["data"]
+    if not isinstance(text, str):
+        return "O argumento de 'data' deve ser uma string de texto", 400
 
-    return jsonify({ "data": summ })
+    summ = summarize.summarize_text(text)
+
+    return { "data": summ }
+
+@app.route("/book/", methods=["POST"])
+async def poppers():
+    content = await request.get_json()
+    if "data" not in content:
+        return "O campo 'data' não foi passado, sem processamento a ser feito", 400
+    
+    text = content["data"]
+    if not isinstance(text, str):
+        return "O argumento de 'data' deve ser uma string de texto", 400
+
+    summ = summarize.summarize_text(text)
+
+    return { "data": summ }
 
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=8080, debug=True)

@@ -12,6 +12,3 @@ def summarize_text(text):
     summary_ids = model_pt.generate(inputs, max_length=256, min_length=32, num_beams=5, no_repeat_ngram_size=3, early_stopping=True)
     summary = tokenizer.decode(summary_ids[0])
     return summary
-
-
-
