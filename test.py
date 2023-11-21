@@ -1,45 +1,35 @@
-# from transformers import pipeline
+# from transformers import T5Tokenizer # Tokenizer  
+# from transformers import T5ForConditionalGeneration # PyTorch model  
+from transformers import MBartForConditionalGeneration
+from transformers import AutoTokenizer
 
+# TOKENIZER_NAME = 'unicamp-dl/ptt5-base-portuguese-vocab'
+# MODEL_NAME = 'phpaiola/ptt5-base-summ-xlsum'
 
-# summarizer = pipeline("summarization")
+TOKENIZER_NAME = "facebook/mbart-large-cc25"
+MODEL_NAME = "GiordanoB/mbart-large-50-finetuned-summarization-V2"
 
+tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_NAME)
+model_pt = MBartForConditionalGeneration.from_pretrained(MODEL_NAME)
 
-# ARTICLE = "Energia nuclear ou energia atômica é a energia liberada em uma reação nuclear, ou seja, em processos de transformação de núcleos atômicos. Alguns isótopos de certos elementos químicos apresentam a capacidade de se transformar em outros isótopos ou elementos por meio de reações nucleares, emitindo energia durante esse processo. Baseia-se no princípio da equivalência massa-energia, proposto por Albert Einstein, segundo a qual durante reações nucleares ocorre transformação de massa em energia." 
-
-# print(summarizer(ARTICLE, max_length=130, min_length=30, do_sample=False))
-
-
-
-
-
-text = "Energia nuclear ou energia atômica é a energia liberada em uma reação nuclear, ou seja, em processos de transformação de núcleos atômicos. Alguns isótopos de certos elementos químicos apresentam a capacidade de se transformar em outros isótopos ou elementos por meio de reações nucleares, emitindo energia durante esse processo. Baseia-se no princípio da equivalência massa-energia, proposto por Albert Einstein, segundo a qual durante reações nucleares ocorre transformação de massa em energia.\n Foi descoberta por Otto Hahn e Lise Meitner com a observação de uma fissão nuclear depois da irradiação de urânio com nêutrons, que tinha como objetivo produzir um núcleo mais pesado. No entanto, eles descobriram que o elemento formado tinha cerca de metade da massa do urânio. Esse fato intrigou os pesquisadores, pois foi observado que um núcleo se dividiu em dois."
-
-whitelist = [ 
-        "NN",
-        "NNS",
-        "NNP",
-        "NNPS",
-        "JJ",
-        "JJR",
-        "JJS",
-    ]
-
-
-
-# from rake_nltk import Rake
-# import nltk
+def summarize_text(text): 
+    inputs = tokenizer.encode(text, max_length=512, truncation=True, return_tensors='pt')
+    summary_ids = model_pt.generate(inputs, max_length=256, min_length=32, num_beams=5, no_repeat_ngram_size=3)
+    summary = tokenizer.decode(summary_ids[0])
+    return summary
 
 
 text = """
-O KNN (K-nearest neighbors, ou “K-vizinhos mais próximos”) costuma ser um dos primeiros algoritmos aprendidos por iniciantes no mundo do aprendizado de máquina. O KNN é muito utilizado em problemas de classificação, e felizmente é um dos algoritmos de machine learning mais fáceis de se compreender. Em resumo, o KNN tenta classificar cada amostra de um conjunto de dados avaliando sua distância em relação aos vizinhos mais próximos. Se os vizinhos mais próximos forem majoritariamente de uma classe, a amostra em questão será classificada nesta categoria. Para entender como o KNN funciona detalhadamente, primeiro considere que temos um conjunto de dados dividido em duas classes: azul e vermelho, conforme a figura abaixo.
+Cerca de 35 milhões de argentinos estão convocados às urnas, em um país polarizado e assolado por uma das piores crises econômicas de sua história. De um lado está o ultraliberal Milei (A Liberdade Avança), que atrai o voto de protesto. De outro Massa (União pela Pátria), o peronista de centro-esquerda, que tenta pela segunda vez a escalada à Casa Rosada
+Os indecisos são vistos como fiel da balança da eleição. No primeiro turno, em 22 de outubro, Massa, atual ministro da Economia, surpreendeu, e obteve 36,7% dos votos, contra 29,9% de Milei — mas 33,24% dos eleitores não votaram em nenhum dos dois candidatos.
+
+Terceira colocada e eliminada da disputa, a conservadora Patricia Bullrich (Juntos pela Mudança), recebeu 23,8% dos votos e, para o segundo turno, decidiu apoiar Milei. Diante de uma participação de 77% do eleitorado, registrou-se 21% de votos em branco, de acordo com levantamento do Focus Group da Universidade de Buenos Aires.
+
+Massa nos últimos dias tentou convencer os indecisos com mensagens de apaziguamento. Prometeu superar as divisões políticas com um "governo de unidade" e apelou para o "voto útil" para salvaguardar o país — que completará 40 anos de democracia ininterrupta no dia em que o novo governo tomar posse, em 10 de dezembro.
+
+Já Milei, à frente de uma formação que inclui negacionistas da ditadura, apostou na tensão. Ele encerrou sua campanha com megacomício para 50 mil pessoas, lançando acusações de "fraudes eleitorais" — a exemplo do ex-presidente Jair Bolsonaro (PL) no Brasil
+
+As pesquisas de intenção de voto indicam um disputa acirrada. A maioria mostra Milei alguns pontos percentuais à frente ou dois tecnicamente empatados.
 """
-from multi_rake import Rake
 
-rake = Rake()
-ranking = rake.apply(text)
-prompts = []
-for keyword, rating in ranking:
-    if rating >= 4:
-        prompts.append(keyword)
-
-print(prompts if len(prompts) <= 3 else prompts[:3])
+print(summarize_text(text))
