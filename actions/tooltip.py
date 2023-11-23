@@ -1,4 +1,3 @@
-import nltk
 import replicate
 import asyncio
 import nltk

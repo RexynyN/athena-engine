@@ -1,3 +1,7 @@
-flask
-wheel
-llama @ git+https://github.com/facebookresearch/llama.git@82ce861078ce1d2a1ac17db15bda3604c684ccbe#egg=llama
+pytube
+wikipedia
+replicate
+nltk
+multi_rake
+quart
+transformers

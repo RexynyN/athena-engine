@@ -1,4 +1,4 @@
-from actions import summarize, tooltip
+from actions import summarize, tooltip, sources
 from quart import Quart, request
 
 app = Quart(__name__)
@@ -51,19 +51,20 @@ async def poppers():
 
     return { "data": summ }
 
-@app.route("/book/", methods=["POST"])
-async def poppers():
+@app.route("/sources/", methods=["POST"])
+async def further_sources():
     content = await request.get_json()
     if "data" not in content:
         return "O campo 'data' não foi passado, sem processamento a ser feito", 400
     
-    text = content["data"]
-    if not isinstance(text, str):
+    concept = content["data"]
+    if not isinstance(concept, str):
         return "O argumento de 'data' deve ser uma string de texto", 400
 
-    summ = summarize.summarize_text(text)
+    wiki = sources.wiki_from_concept(concept)
+    yt = sources.video_from_concept(concept)
 
-    return { "data": { "": summ }  }
+    return { "data": { "video": yt, "wiki": wiki }  }
 
 if __name__ == '__main__':
-    app.run(host="127.0.0.1", port=8080, debug=True)
+    app.run(host="127.0.0.1", port=8080, debug=True, use_reloader=False)
