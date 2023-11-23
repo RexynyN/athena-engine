@@ -3,8 +3,12 @@ from transformers import AutoTokenizer, MBartForConditionalGeneration
 TOKENIZER_NAME = "facebook/mbart-large-cc25"
 MODEL_NAME = "GiordanoB/mbart-large-50-finetuned-summarization-V2"
 
+
+print("Loading in models for summarization...")
 tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_NAME)
 model_pt = MBartForConditionalGeneration.from_pretrained(MODEL_NAME)
+
+print("Models loaded successfully!")
 
 # from transformers import T5Tokenizer, T5ForConditionalGeneration 
 # TOKENIZER_NAME = 'unicamp-dl/ptt5-base-portuguese-vocab'

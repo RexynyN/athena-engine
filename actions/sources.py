@@ -1,9 +1,14 @@
 from pytube import Search 
 import wikipedia as wp
 
+wp.set_lang("pt")
 
 def wiki_from_concept(concept: str) -> dict:
-    pass 
+    query = wp.search(concept, results=1)[0]
+
+    url = wp.page(query).url
+
+    return { "link" : url }
 
 def video_from_concept(concept: str) -> dict: 
     video = Search(f"explicação {concept}").results[0]
@@ -21,9 +26,3 @@ def video_from_concept(concept: str) -> dict:
 
 
 
-wp.set_lang("pt")
-
-query = wp.search("ensinamentos de platão", results = 5)
-print(query)
-
-print(wp.page(query).url)
