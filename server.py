@@ -17,9 +17,9 @@ async def tooltip_text():
     if not isinstance(text, str):
         return "O argumento de 'data' deve ser uma string de texto", 400
     
-    tooltips = await tooltip.classify_from_text(content["data"])
+    words, tooltips = await tooltip.classify_from_text(content["data"])
 
-    return { "data": tooltips }
+    return { "data": { "words": words, "tooltips": tooltips } }
 
 
 @app.route('/tooltip/list', methods=["POST"])
@@ -32,9 +32,9 @@ async def tooltip_concepts():
     if not isinstance(concepts, list):
         return "O argumento de 'data' deve ser uma lista de strings de texto", 400
     
-    tooltips = await tooltip.classify_from_concept(concepts)
+    words, tooltips = await tooltip.classify_from_concept(concepts)
 
-    return { "data": tooltips }
+    return { "data": { "words": words, "tooltips": tooltips } }
 
 
 @app.route("/summarize/", methods=["POST"])

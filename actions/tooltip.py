@@ -18,7 +18,7 @@ API_FAILSAFE = True
 
 # User passes a list of concepts, and we return a text explaining them
 async def classify_from_concept(concepts: list[str]):
-    return await _async_generate_all(concepts)
+    return await concepts, _async_generate_all(concepts)
 
 # User passes a text, and we return a text explaining the core concepts of it
 async def classify_from_text(text: str):
