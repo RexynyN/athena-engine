@@ -1,7 +1,9 @@
 from actions import summarize, tooltip, sources
 from quart import Quart, request
+from quart_cors import cors
 
 app = Quart(__name__)
+app = cors(app, allow_origin="*")
 
 @app.route('/')
 async def index():
@@ -37,7 +39,7 @@ async def tooltip_concepts():
     return { "data": { "words": words, "tooltips": tooltips } }
 
 
-@app.route("/summarize/", methods=["POST"])
+@app.route("/summarize", methods=["POST"])
 async def poppers():
     content = await request.get_json()
     if "data" not in content:
